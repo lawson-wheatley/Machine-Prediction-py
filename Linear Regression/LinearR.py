@@ -68,46 +68,57 @@ data2 = pd.read_csv("PimaA.csv",index_col=0)
 #xa = data[['AGE','WORKCLASS','FNLWGT','EDUCATION','EDUCATION_NUM','MARITAL_STATUS','OCCUPATION','RELATIONSHIP','RACE','SEX','CAPITAL_GAIN','CAPITAL_LOSS','HOURS_PER_WEEK','NATIVE_COUNTRY']]
 xa=data.as_matrix(columns=['AGE','WORKCLASS','FNLWGT','EDUCATION','EDUCATION_NUM','MARITAL_STATUS','OCCUPATION','RELATIONSHIP','RACE','SEX','CAPITAL_GAIN','CAPITAL_LOSS','HOURS_PER_WEEK','NATIVE_COUNTRY'])
 xaa = data2.as_matrix(columns=['AGE','WORKCLASS','FNLWGT','EDUCATION','EDUCATION_NUM','MARITAL_STATUS','OCCUPATION','RELATIONSHIP','RACE','SEX','CAPITAL_GAIN','CAPITAL_LOSS','HOURS_PER_WEEK','NATIVE_COUNTRY'])
-xaaa = xaa
-xaaaa= xaa
+xaxa=xa
+
 xaaaaa=xaa
 loc=0
 ya = data.as_matrix(columns=['INCOME'])
+yaya=ya
 yaa = data2.as_matrix(columns=['INCOME'])
 xa=xa[:,:]
 ya=ya[:,0]
-test_siz = 0.4
 seed = 10
+abb=pd.DataFrame([[0,1]],columns=['INDX','ACC'])
+acc= pd.DataFrame([[0,1]],columns=['NUM','ACC'])
+test_siz = 0.001
+gg=1
+while test_siz <=0.999:
+	xa=xaxa
+	ya=yaya
+	xa, xaa, ya, yaa = model_selection.train_test_split(xa,ya,test_size=test_siz, random_state = seed)
+	model=linear_model.LinearRegression()
+	model.fit(xa, ya)
+	mm=0
+	test_siz+=.001
+	aom=model.predict(xaa)
+	#print("Mean error NR: %.2f" % np.mean((aom - yaa)))
+	aok=np.round(model.predict(xaa))
+	#print("Mean error R: %.2f" % np.mean((aok - yaa)))
+	x,y = xaa.shape
+	g=0.00
+	for c in range(0,x):
+		if aok[c] ==2:
+			aok[c] =1
+		if (aok[c] == yaa[c]):
+			g+=1.00
+	print("Final Accuracy:"+str((g/x)*100)+"%")
+	lol=pd.DataFrame([[gg,(g/x)*100]], columns=['NUM','ACC'])
+	acc = acc.append(lol)
+	gg+=1
+#filename='Model_model.save'
+#joblib.dump(model, filename)
 
-#xa, xaa, ya, yaa = model_selection.train_test_split(xa,ya,test_size=test_siz, random_state = seed)
-
-model=linear_model.LinearRegression()
-model.fit(xa, ya)
-filename='Model_model.save'
-joblib.dump(model, filename)
-
-loaded_model=joblib.load(filename)
+#loaded_model=joblib.load(filename)
 #result=loaded_model.score(xaa,yaa)
 #print(result)
-mm=0
-aom=model.predict(xaa)
-print("Mean error NR: %.2f" % np.mean((aom - yaa)))
-aok=np.round(model.predict(xaa))
-print("Mean error R: %.2f" % np.mean((aok - yaa)))
-x,y = xaa.shape
-g=0.00
-for c in range(0,x):
-	if aok[c] ==2:
-		aok[c] =1
-	if (aok[c] != yaa[c]):
-		g+=1.00
-	if (c%3000 ==0):
-		print("Accuracy:"+str((float((x-g))/x)*100)+"%")
-print("Final Accuracy:"+str((float((x-g))/x)*100)+"%")
-plt.scatter(xaa[:,mm], aok, color='blue', linewidth=5)
-plt.scatter(xaa[:,mm], yaa,  color='black')
+print(acc.head(2))
+gn=acc.as_matrix()
+
+plt.scatter(gn[:,0], gn[:,1], color='blue', linewidth=3)
 
 plt.xticks(())
 plt.yticks(())
-
+plt.axis([0.0,10000.0,70.0,90.0])
+ax=plt.gca()
+ax.set_autoscale_on(False)
 plt.show()
