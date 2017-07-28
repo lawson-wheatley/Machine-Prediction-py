@@ -6,6 +6,7 @@ import decimal
 from keras.layers import Dense
 from matplotlib import pyplot as plt
 import pandas as pd
+from sklearn import model_selection
 import numpy as np
 import time
 np.random.seed(8)
@@ -40,15 +41,19 @@ data2 = pd.read_csv("pima2.csv",index_col=0)
 #xa = data[['AGE','WORKCLASS','FNLWGT','EDUCATION','EDUCATION_NUM','MARITAL_STATUS','OCCUPATION','RELATIONSHIP','RACE','SEX','CAPITAL_GAIN','CAPITAL_LOSS','HOURS_PER_WEEK','NATIVE_COUNTRY']]
 xa=converta(data.as_matrix(columns=['AGE','WORKCLASS','FNLWGT','EDUCATION','EDUCATION_NUM','MARITAL_STATUS','OCCUPATION','RELATIONSHIP','RACE','SEX','CAPITAL_GAIN','CAPITAL_LOSS','HOURS_PER_WEEK','NATIVE_COUNTRY']))
 xaa = converta(data2.as_matrix(columns=['AGE','WORKCLASS','FNLWGT','EDUCATION','EDUCATION_NUM','MARITAL_STATUS','OCCUPATION','RELATIONSHIP','RACE','SEX','CAPITAL_GAIN','CAPITAL_LOSS','HOURS_PER_WEEK','NATIVE_COUNTRY']))
-xaaa = xaa
-xaaaa= xaa
-xaaaaa=xaa
 print(xa[9])
 x,y = xa.shape
-print(x)
-print(y)
+xaxa=xa
 ya = converta(data.as_matrix(columns=['INCOME']))
+yaya=ya
+acc= pd.DataFrame([[0,1]],columns=['NUM','ACC'])
 #defining model
+
+print xa.shape
+print ya.shape
+test_siz=0.01
+ok=1
+seed = 7
 model=Sequential()
 #model.add(Dense(512, input_shape=(14,), activation='tanh'))
 #model.add(Dense(256, activation = 'tanh'))
@@ -61,35 +66,30 @@ model.add(Dense(28, activation = 'relu'))
 model.add(Dense(14, activation = 'relu'))
 model.add(Dense(1, activation = 'sigmoid'))
 model.compile(loss='mean_squared_logarithmic_error',optimizer='SGD',metrics=['accuracy'])
-print xa.shape
-print ya.shape
-model.fit(xa,ya,validation_split=0.1, verbose=1)
-model.save("model_model.h5")
-model = keras.models.load_model("model_model.h5")
-print("Prediction 1")
-predictions=model.predict(xaa)
-scores=model.evaluate(xa,ya)
-print("\n%s: %.2f%%" % (model.metrics_names[1],scores[1]*100))
-rounded = [round(xaa[0]) for xaa in predictions]
-print(rounded)
-print("Prediction 2")
-predictions=model.predict(xaaa)
-scores=model.evaluate(xa,ya)
-print("\n%s: %.2f%%" % (model.metrics_names[1],scores[1]*100))
-rounded = [round(xaaa[0]) for xaaa in predictions]
-print(rounded)
-print("Prediction 3")
-predictions=model.predict(xaaaa)
-scores=model.evaluate(xa,ya)
-print("\n%s: %.2f%%" % (model.metrics_names[1],scores[1]*100))
-rounded = [round(xaaaa[0]) for xaaaa in predictions]
-print(rounded)
-print("Prediction 4")
-predictions=model.predict(xaaaaa)
-scores=model.evaluate(xa,ya)
-print("\n%s: %.2f%%" % (model.metrics_names[1],scores[1]*100))
-rounded = [round(xaaaaa[0]) for xaaaaa in predictions]
-print(rounded)
-#fig, ax = plt.subplots(1,1)
-#ax[0].hist(xa, 10, facecolor='red', alpha=0.5, label= "Simulated")
-#ax[0].hist(data[:,0:8], facecolor='black',alpha=0.5,label="Actual")
+while test_siz <=.99:
+	xa=xaxa
+	ya=yaya
+	#xa, xaa, ya, yaa = model_selection.train_test_split(xa,ya,test_size=test_siz, random_state = seed)
+	model.fit(xa,ya,epochs=1, batch_size=32537, verbose=1)
+	#model.save("model_model.h5")
+	#model = keras.models.load_model("model_model.h5")
+	print("Prediction 1")
+	predictions=model.predict(xaa)
+	scores=model.evaluate(xa,ya)
+	print("\n%s: %.2f%%" % (model.metrics_names[1],scores[1]*100))
+	lol=pd.DataFrame([[ok,(scores[1]*100)]], columns=['NUM','ACC'])
+	acc = acc.append(lol)
+	ok+=1
+	test_siz+=.01
+	
+gn=acc.as_matrix()
+
+plt.scatter(gn[:,0], gn[:,1], color='blue', linewidth=3)
+
+plt.xticks(())
+plt.yticks(())
+plt.axis([0.0,50,74,78])
+ax=plt.gca()
+ax.set_autoscale_on(False)
+plt.savefig('Neural.png', bbox_inches='tight')
+plt.show()

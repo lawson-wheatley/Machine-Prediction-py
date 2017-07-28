@@ -80,16 +80,16 @@ ya=ya[:,0]
 seed = 10
 abb=pd.DataFrame([[0,1]],columns=['INDX','ACC'])
 acc= pd.DataFrame([[0,1]],columns=['NUM','ACC'])
-test_siz = 0.001
+test_siz = 0.0001
 gg=1
-while test_siz <=0.999:
+while test_siz <=0.9999:
 	xa=xaxa
 	ya=yaya
 	xa, xaa, ya, yaa = model_selection.train_test_split(xa,ya,test_size=test_siz, random_state = seed)
 	model=linear_model.LinearRegression()
 	model.fit(xa, ya)
 	mm=0
-	test_siz+=.001
+	test_siz+=.0001
 	aom=model.predict(xaa)
 	#print("Mean error NR: %.2f" % np.mean((aom - yaa)))
 	aok=np.round(model.predict(xaa))
@@ -121,4 +121,6 @@ plt.yticks(())
 plt.axis([0.0,10000.0,70.0,90.0])
 ax=plt.gca()
 ax.set_autoscale_on(False)
+plt.savefig('LinearRegression.png', bbox_inches='tight')
 plt.show()
+
